@@ -31,7 +31,7 @@ Begin by [registering an application with Lyft](https://www.lyft.com/developers/
 
 ### Slack
 
-![Slack](screenshots/slack.png)
+![Slack](./screenshots/slack.png)
 
 ### IRC / Hipchat
 

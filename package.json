@@ -7,10 +7,10 @@
   "keywords": "hubot, hubot-scripts, lyft",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hubot-scripts/hubot-lyft.git"
+    "url": "git://github.com/stephenyeargin/hubot-lyft.git"
   },
   "bugs": {
-    "url": "https://github.com/hubot-scripts/hubot-lyft/issues"
+    "url": "https://github.com/stephenyeargin/hubot-lyft/issues"
   },
   "dependencies": {
     "cli-table": "^0.3.1",
