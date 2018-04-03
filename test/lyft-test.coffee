@@ -5,40 +5,54 @@ fs = require 'fs'
 
 expect = chai.expect
 
-helper = new Helper('../src/lyft.coffee')
+helper = new Helper [
+  '../src/lyft.coffee'
+]
 
-describe 'lyft', ->
+# Alter time as test runs
+originalDateNow = Date.now
+mockDateNow = () ->
+  return Date.parse('Tue Mar 06 2018 23:01:27 GMT-0600 (CST)')
+
+describe 'hubot-lyft', ->
   beforeEach ->
-    process.env.HUBOT_LYFT_DEFAULT_LONGITUDE = '-86.000'
-    process.env.HUBOT_LYFT_DEFAULT_LATITUDE = '36.000'
-    process.env.HUBOT_LYFT_CLIENT_TOKEN = 'foobarbaz'
-
+    process.env.HUBOT_LYFT_DEFAULT_LONGITUDE='-86.000'
+    process.env.HUBOT_LYFT_DEFAULT_LATITUDE='36.000'
+    process.env.HUBOT_LYFT_CLIENT_TOKEN='foobarbaz'
+    Date.now = mockDateNow
     @room = helper.createRoom()
+    nock.disableNetConnect()
 
-    do nock.disableNetConnect
+  afterEach ->
+    delete process.env.HUBOT_LYFT_DEFAULT_LONGITUDE
+    delete process.env.HUBOT_LYFT_DEFAULT_LATITUDE
+    delete process.env.HUBOT_LYFT_CLIENT_TOKEN
+    Date.now = originalDateNow
+    @room.destroy()
+    nock.cleanAll()
+
+  it 'retrieves the current lyft availability', (done) ->
     options =
       reqheaders:
         authorization: "Bearer foobarbaz"
     nock('https://api.lyft.com', options)
-      .get('/v1/ridetypes?lat=36.000&lng=-86.000')
+      .get('/v1/ridetypes')
+      .query(
+        lat: '36.000'
+        lng: '-86.000'
+      )
       .reply 200, fs.readFileSync('test/fixtures/ridetypes.json')
     nock('https://api.lyft.com', options)
-      .get('/v1/eta?lat=36.000&lng=-86.000')
+      .get('/v1/eta')
+      .query(
+        lat: '36.000'
+        lng: '-86.000'
+      )
       .reply 200, fs.readFileSync('test/fixtures/eta.json')
 
-  afterEach ->
-    @room.destroy()
-    nock.cleanAll()
-
-  it 'responds to lyft', (done) ->
     selfRoom = @room
-    testPromise = new Promise (resolve, reject) ->
-      selfRoom.user.say('alice', '@hubot lyft')
-      setTimeout(() ->
-        resolve()
-      , 200)
-
-    testPromise.then ((result) ->
+    selfRoom.user.say('alice', '@hubot lyft')
+    setTimeout(() ->
       try
         expect(selfRoom.messages).to.eql [
           ['alice', '@hubot lyft']
@@ -50,4 +64,4 @@ describe 'lyft', ->
       catch err
         done err
       return
-    ), done
+    , 1000)
