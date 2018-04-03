@@ -65,6 +65,7 @@ module.exports = (robot) ->
       makeApiCall('/eta', location)
       .then (response) ->
         robot.logger.debug '/eta response', response
+        payload = []
         _(response.eta_estimates).each (row, i) ->
           # Format ETA
           eta = moment.duration(row.eta_seconds * 1000).minutes()
@@ -73,59 +74,61 @@ module.exports = (robot) ->
           currencyOpts = symbol: symbol, format: "%s%v"
           ride_type = ride_types[row.ride_type]
           pricing_details = ride_types[row.ride_type].pricing_details
-          # Format response to client
-          if isSlack
-            payload = {
-              attachments: [
-                {
-                  fallback: "#{row.display_name}: Seats #{ride_type.seats}, arrives in #{eta} minute(s)"
-                  title: row.display_name,
-                  thumb_url: ride_type.image_url,
-                  color: '#FF00BF',
-                  fields: [
-                    {
-                      title: 'Arrives'
-                      value: "#{eta} minute(s)",
-                      short: true
-                    },
-                    {
-                      title: 'Seats'
-                      value: ride_type.seats,
-                      short: true
-                    },
-                    {
-                      title: 'Base Charge',
-                      value: formatCurrency(pricing_details.base_charge/100, currencyOpts),
-                      short: true
-                    },
-                    {
-                      title: 'Cost per Mile',
-                      value: formatCurrency(pricing_details.cost_per_mile/100, currencyOpts),
-                      short: true
-                    },
-                    {
-                      title: 'Cost per Minute',
-                      value: formatCurrency(pricing_details.cost_per_minute/100, currencyOpts),
-                      short: true
-                    },
-                    {
-                      title: 'Trust & Service Fee',
-                      value: formatCurrency(pricing_details.trust_and_service/100, currencyOpts),
-                      short: true
-                    },
-                    {
-                      title: 'Cancel Penalty',
-                      value: formatCurrency(pricing_details.cancel_penalty_amount/100, currencyOpts),
-                      short: true
-                    },
-                  ]
-                }
-              ]
-            }
-            robot.logger.debug JSON.stringify(payload)
-            msg.send payload
-          else
-            msg.send "#{row.display_name}: Seats #{ride_type.seats}, arrives in #{eta} minute(s)"
+          chunk = {
+            fallback: "#{row.display_name}: Seats #{ride_type.seats}, arrives in #{eta} minute(s)"
+            title: row.display_name,
+            thumb_url: ride_type.image_url,
+            color: '#FF00BF',
+            fields: [
+              {
+                title: 'Arrives'
+                value: "#{eta} minute(s)",
+                short: true
+              },
+              {
+                title: 'Seats'
+                value: ride_type.seats,
+                short: true
+              },
+              {
+                title: 'Base Charge',
+                value: formatCurrency(pricing_details.base_charge/100, currencyOpts),
+                short: true
+              },
+              {
+                title: 'Cost per Mile',
+                value: formatCurrency(pricing_details.cost_per_mile/100, currencyOpts),
+                short: true
+              },
+              {
+                title: 'Cost per Minute',
+                value: formatCurrency(pricing_details.cost_per_minute/100, currencyOpts),
+                short: true
+              },
+              {
+                title: 'Trust & Service Fee',
+                value: formatCurrency(pricing_details.trust_and_service/100, currencyOpts),
+                short: true
+              },
+              {
+                title: 'Cancel Penalty',
+                value: formatCurrency(pricing_details.cancel_penalty_amount/100, currencyOpts),
+                short: true
+              },
+            ]
+          }
+
+          switch robot.adapterName
+            when 'slack'
+              payload.push chunk
+            else
+              msg.send chunk.fallback
+
+        # Send Payload
+        if payload.length > 0
+          msg.send { attachments: payload }
+
+
       # Inner Error Catch
       .catch (error) ->
         msg.send error
