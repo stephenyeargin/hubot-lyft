@@ -25,9 +25,6 @@ module.exports = (robot) ->
   unless process.env.HUBOT_LYFT_CLIENT_TOKEN
     robot.logger.warning 'HUBOT_LYFT_CLIENT_TOKEN missing! See README for help'
 
-  # Use enhanced formatting?
-  isSlack = robot.adapterName == 'slack'
-
   # Location default for the bot, default to Nashville :-)
   default_latitude = process.env.HUBOT_LYFT_DEFAULT_LATITUDE || 36.1627
   default_longitude = process.env.HUBOT_LYFT_DEFAULT_LONGITUDE || -86.7816
