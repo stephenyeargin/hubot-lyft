@@ -1,9 +1,5 @@
-# Description:
+# Description
 #   List estimated arrival times and available Lyft services.
-#
-# Dependencies:
-#   cli-table
-#   moment
 #
 # Configuration:
 #   HUBOT_LYFT_CLIENT_TOKEN - client OAuth2 token from https://www.lyft.com/developers/manage

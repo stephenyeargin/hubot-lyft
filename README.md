@@ -1,5 +1,7 @@
 # Hubot Lyft
 
+[![npm version](https://badge.fury.io/js/hubot-lyft.svg)](http://badge.fury.io/js/hubot-lyft) [![Build Status](https://travis-ci.org/stephenyeargin/hubot-lyft.png)](https://travis-ci.org/stephenyeargin/hubot-lyft)
+
 List estimated arrival times and available Lyft services.
 
 ## Installation
@@ -19,11 +21,11 @@ Then add **hubot-lyft** to your `external-scripts.json`:
 
 Begin by [registering an application with Lyft](https://www.lyft.com/developers/manage). After you have created the app, click "Show Credentials" to grab the `Client Token` value. Save this in your configuration as `HUBOT_LYFT_CLIENT_TOKEN`.
 
-| Environment Variable      | Required? | Description                          |
-| ------------------------- | :-------: | ------------------------------------ |
-| `HUBOT_LYFT_CLIENT_TOKEN` | **Yes**   | Client OAuth2 Token |
-| `HUBOT_LYFT_DEFAULT_LATITUDE` | No`^` | Default latitude for your queries |
-| `HUBOT_LYFT_DEFAULT_LONGITUDE` | No`^` | Default longitude for your queries |
+| Environment Variable            | Required? | Description                    |
+| ------------------------------- | :-------: | ------------------------------ |
+| `HUBOT_LYFT_CLIENT_TOKEN`       | Yes       | Client OAuth2 Token            |
+| `HUBOT_LYFT_DEFAULT_LATITUDE`   | No`^` | Default latitude for your queries  |
+| `HUBOT_LYFT_DEFAULT_LONGITUDE`  | No`^` | Default longitude for your queries |
 
 `^` Will work without it, but defaults to downtown Nashville, TN. Not very useful for service where _you_ might be.
 
